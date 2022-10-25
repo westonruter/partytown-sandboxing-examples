@@ -37,8 +37,13 @@ const partytownInlineScript = fs.readFileSync(
 
 fastify.get("/", function (request, reply) {
   reply.headers(crossOriginIsolationHeaders);
+
+  const partytownEnabled = request.query.partytown === 'true' || ! ('partytown' in request.query);
+
   reply.view("/src/index.hbs", {
     partytown_inline_script: partytownInlineScript,
+    using_partytown: partytownEnabled,
+    script_content_type: partytownEnabled ? 'text/partytown' : 'text/javascript'
   });
 });
 

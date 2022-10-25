@@ -3,20 +3,101 @@
     <head>
         <meta charset="utf8">
         <title>Partytown Test</title>
-        <script>
-            {{{ partytown_inline_script }}}
-        </script>
+        {{#if using_partytown}}
+            <script>
+                var partytown = {
+                    debug: true,
+                };
+            </script>
+            <script>
+                {{{ partytown_inline_script }}}
+            </script>
+        {{/if}}
+        <style>
+            #blocking-script-output {
+                margin-left: 20px;
+                padding-left: 20px;
+                border-left: solid 1px gray;
+            }
+            footer {
+                margin-top: 1em;
+                padding-top: 1em;
+                border-top: solid 1px gray;
+            }
+        </style>
     </head>
     <body>
         <h1>Partytown Test</h1>
 
+        <p>
+            The following paragraph is updated with a script that has 300ms of blocking JS.
 
-        <div id="output">
-            Loading...
+            {{#if using_partytown}}
+                Since Partytown is enabled, the script should not interfere with the spinning emoji below.
+                <a href="/?partytown=false">Disable Partytown</a>
+            {{else}}
+                Since Partytown is disabled, you should notice the emoji below failing to spin smoothly.
+                <a href="/?partytown=true">Enable Partytown</a>
+            {{/if}}
+        </p>
+
+        <div id="blocking-script-output">
+            <em>Loading...</em>
         </div>
-        <script type="text/partytown">
-            document.getElementById( 'output' ).innerText = "Hello from Partytown!";
+        <script type="{{ script_content_type }}">
+            setInterval( () => {
+                const startDate = new Date();
+
+                // Cause some serious jank!
+                while ( (new Date()).valueOf() - startDate.valueOf() < 300 ) {}
+
+                const time = (new Date()).toLocaleTimeString();
+
+                document.getElementById( 'blocking-script-output' ).innerText = `Hello from blocking script! The current time is ${time}.`;
+            }, 1000 );
         </script>
 
+        <p>If the following emoji is not animated smoothly, then there is JS blocking on the main thread:</p>
+
+        <!-- Hat tip https://codepen.io/m_uzair/pen/gOrjYOz -->
+        <p>
+            <span id="spinner">🌀</span>
+        </p>
+        <style>
+            #spinner {
+                display: inline-block;
+                font-size: 100px;
+            }
+        </style>
+        <script>
+        const spinner = document.getElementById('spinner');
+
+        let rotateCount = 0;
+        let startTime = null;
+        let rAF;
+
+        function draw(timestamp) {
+            
+            if(!startTime) {
+                startTime = timestamp;
+            }
+            
+            rotateCount = (timestamp - startTime) / 3;
+            
+            if(rotateCount > 359) {
+                rotateCount %= 360;
+            }
+            
+            spinner.style.transform = `rotate(${rotateCount}deg)`;
+            
+            rAF = requestAnimationFrame(draw);  
+        }
+
+        draw();
+        </script>
+
+        <footer>
+            <a href="https://weston.ruter.net/">@westonruter</a>
+        </footer>
     </body>
 </html>

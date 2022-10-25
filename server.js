@@ -1,9 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 
-// Require the fastify framework and instantiate it
 const fastify = require("fastify")({
-  // set this to true for detailed logging:
   logger: false,
 });
 
@@ -40,9 +38,15 @@ fastify.get("/", function (request, reply) {
 
   const partytownEnabled = request.query.partytown === 'true' || ! ('partytown' in request.query);
 
+  let blockingTime = parseInt( request.query.blocktime, 10 );
+  if ( isNaN( blockingTime ) || blockingTime <= 0 ) {
+    blockingTime = 300;
+  }
+
   reply.view("/src/index.hbs", {
     partytown_inline_script: partytownInlineScript,
     using_partytown: partytownEnabled,
+    blocking_time: blockingTime,
     script_content_type: partytownEnabled ? 'text/partytown' : 'text/javascript'
   });
 });

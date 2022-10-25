@@ -30,26 +30,28 @@
         <h1>Partytown Test</h1>
 
         <p>
-            The following paragraph is updated with a script that has 300ms of blocking JS.
+            The following paragraph is updated with a script that has {{blocking_time}}ms of blocking JS.
 
             {{#if using_partytown}}
                 Since Partytown is enabled, the script should not interfere with the spinning emoji below.
-                <a href="/?partytown=false">Disable Partytown</a>
+                <a href="?partytown=false">Disable Partytown</a>
             {{else}}
                 Since Partytown is disabled, you should notice the emoji below failing to spin smoothly.
-                <a href="/?partytown=true">Enable Partytown</a>
+                <a href="?partytown=true">Enable Partytown</a>
             {{/if}}
         </p>
 
         <div id="blocking-script-output">
             <em>Loading...</em>
         </div>
-        <script type="{{ script_content_type }}">
+        <script id="blocking-script" type="{{ script_content_type }}" data-blocking-time="{{ blocking_time }}">
+            const blockingTime = parseInt( document.currentScript.dataset.blockingTime, 10 );
+
             setInterval( () => {
                 const startDate = new Date();
 
                 // Cause some serious jank!
-                while ( (new Date()).valueOf() - startDate.valueOf() < 300 ) {}
+                while ( (new Date()).valueOf() - startDate.valueOf() < blockingTime ) {}
 
                 const time = (new Date()).toLocaleTimeString();
 
@@ -77,22 +79,16 @@
         let rAF;
 
         function draw(timestamp) {
-            
             if(!startTime) {
                 startTime = timestamp;
             }
-            
             rotateCount = (timestamp - startTime) / 3;
-            
             if(rotateCount > 359) {
                 rotateCount %= 360;
             }
-            
             spinner.style.transform = `rotate(-${rotateCount}deg)`;
-            
-            rAF = requestAnimationFrame(draw);  
+            rAF = requestAnimationFrame(draw);
         }
-
         draw();
         </script>
 

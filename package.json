@@ -1,0 +1,23 @@
+{
+    "name": "partytown-test",
+    "version": "0.1.0",
+    "description": "Testing Partytown.js",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "forever -w server.js",
+        "partytown": "partytown copylib public/~partytown"
+    },
+    "dependencies": {
+        "@builder.io/partytown": "^0.7.1",
+        "@fastify/static": "^6.5.0",
+        "@fastify/view": "^7.1.1",
+        "fastify": "^4.4.0",
+        "forever": "^4.0.3",
+        "handlebars": "^4.7.7"
+    },
+    "engines": {
+        "node": "14.x"
+    },
+    "license": "MIT"
+}

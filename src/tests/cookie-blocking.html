@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf8" />
+    <title>Cookie Blocking</title>
+    <script>
+      var partytown = {
+        debug: true,
+
+        get: (opts) => {
+          if (opts.nodeName === "#document" && "cookie" === opts.name) {
+            return "partying=true";
+          }
+          return opts.continue;
+        },
+
+        set: (opts) => {
+          if (opts.nodeName === "#document" && "cookie" === opts.name) {
+            console.warn(`Blocked setting cookie to ${opts.value}`);
+            return opts.prevent;
+          }
+          return opts.continue;
+        },
+      };
+    </script>
+    <style>
+      output {
+        font-family: monospace;
+      }
+      output:empty::before {
+        content: "(None)";
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Cookie Blocking</h1>
+
+    <p>
+      Current <code>document.cookie</code> as seen by host page:
+      <output id="current-cookie"></output>
+    </p>
+
+    <!-- This is intentionally running on the main thread. -->
+    <script>
+      let lastHostCookie;
+      setInterval(() => {
+        if (lastHostCookie !== document.cookie) {
+          document.getElementById("current-cookie").value = document.cookie;
+        }
+        lastHostCookie = document.cookie;
+      }, 100);
+    </script>
+
+    <fieldset>
+      <legend>Cookie Jar</legend>
+
+      <p>
+        Current <code>document.cookie</code> as seen by sandboxed script:
+        <output id="sandboxed-cookie"></output>
+      </p>
+
+      <p>
+        When Partytown is enabled, the return value of
+        <code>document.cookie</code> is forced to always be
+        <code>partying=true</code>. Additionally, attempting to set any new
+        cookies is blocked.
+      </p>
+
+      <form action="javascript:">
+        <p>
+          <label>
+            Name:
+            <input type="text" id="cookie_name" required />
+          </label>
+
+          <label>
+            Value:
+            <input type="text" id="cookie_value" />
+          </label>
+
+          <button type="submit">Add Cookie</button>
+        </p>
+      </form>
+
+      <script type="text/javascript">
+        document.querySelector("form").addEventListener("submit", (e) => {
+          // Note: Cannot use FormData here since e.target is a worker proxy and not an HTMLFormElement!
+
+          document.cookie =
+            document.getElementById("cookie_name").value +
+            "=" +
+            document.getElementById("cookie_value").value;
+        });
+
+        let lastSandboxCookie;
+        setInterval(() => {
+          if (lastSandboxCookie !== document.cookie) {
+            document.getElementById("sandboxed-cookie").value = document.cookie;
+          }
+          lastSandboxCookie = document.cookie;
+        }, 100);
+      </script>
+    </fieldset>
+  </body>
+</html>

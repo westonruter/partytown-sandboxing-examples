@@ -74,9 +74,9 @@ fastify.get("/tests/:test/", (request, reply) => {
   if (partytownEnabled) {
     page = page.replace('text/javascript', 'text/partytown');
     page = page.replace('</head>', `<script>${partytownInlineScript}</script></head>`);
-    page = page.replace('</body>', '<a href="?partytown=false">Disable Partytown</a></body>');
+    page = page.replace('</body>', '<p><a href="?partytown=false">Disable Partytown</a></p></body>');
   } else {
-    page = page.replace('</body>', '<a href="?partytown=true">Enable Partytown</a></body>');
+    page = page.replace('</body>', '<p><a href="?partytown=true">Enable Partytown</a></p></body>');
   }
 
   reply

@@ -10,19 +10,8 @@
                     logCalls: true,
                     logGetters: true,
                     logSetters: true,
-                    get: (opts) => {
-                        console.log('get:', opts);
-                        if ( opts.nodeName === '#document' && 'cookie' === opts.name ) {
-                            return '';
-                        }
-                        return opts.continue;
-                    },
                     set: (opts) => {
                         console.log('set:', opts);
-                        // Block cookie access.
-                        if ( opts.nodeName === '#document' && 'cookie' === opts.name ) {
-                            //return opts.prevent;
-                        }
                         // Block setting innerHTML containing strings.
                         if (opts.name === 'innerHTML') {
                             const sanitizer = new Sanitizer(
@@ -84,70 +73,6 @@
     </head>
     <body>
         <h1>Partytown Test</h1>
-<!--
-        <p>
-            The following paragraph is updated with a script that has {{blocking_time}}ms of blocking JS.
-
-            {{#if using_partytown}}
-                Since Partytown is enabled, the script should not interfere with the spinning emoji below.
-                <a href="?partytown=false">Disable Partytown</a>
-            {{else}}
-                Since Partytown is disabled, you should notice the emoji below failing to spin smoothly.
-                <a href="?partytown=true">Enable Partytown</a>
-            {{/if}}
-        </p>
-
-        <div id="blocking-script-output">
-            <em>Loading...</em>
-        </div>
-        <script id="blocking-script" type="{{ script_content_type }}" data-blocking-time="{{ blocking_time }}">
-            document.body.style.backgroundColor = 'red';
-            const blockingTime = parseInt( document.currentScript.dataset.blockingTime, 10 );
-
-            setInterval( () => {
-                const startDate = new Date();
-
-                // Cause some serious jank!
-                while ( (new Date()).valueOf() - startDate.valueOf() < blockingTime ) {}
-
-                const time = (new Date()).toLocaleTimeString();
-
-                document.getElementById( 'blocking-script-output' ).innerText = `Hello from blocking script! The current time is ${time}.`;
-            }, 1000 );
-        </script>
-
-        <p>If the following emoji is not animated smoothly, then there is JS blocking on the main thread:</p>
--->
-        <!-- Hat tip https://codepen.io/m_uzair/pen/gOrjYOz -->
-        <p>
-            <span id="spinner">🌀</span>
-        </p>
-        <style>
-            #spinner {
-                display: inline-block;
-                font-size: 100px;
-            }
-        </style>
-        <script>
-        const spinner = document.getElementById('spinner');
-
-        let rotateCount = 0;
-        let startTime = null;
-        let rAF;
-
-        function draw(timestamp) {
-            if(!startTime) {
-                startTime = timestamp;
-            }
-            rotateCount = (timestamp - startTime) / 3;
-            if(rotateCount > 359) {
-                rotateCount %= 360;
-            }
-            spinner.style.transform = `rotate(-${rotateCount}deg)`;
-            rAF = requestAnimationFrame(draw);
-        }
-        draw();
-        </script>
 
         <div id="test">
             Target
@@ -183,8 +108,6 @@
 
         <script type="notext/partytown">
         
-            //console.info( `document.cookie == ${document.cookie}` );
-            //document.cookie = 'foo2=bar2';
             //localStorage.setItem( 'greeting', 'Hello World' );
             console.info( 'I AM GREETED:', localStorage.getItem( 'greeting' ) );
             //localStorage.removeItem( 'greeting' );

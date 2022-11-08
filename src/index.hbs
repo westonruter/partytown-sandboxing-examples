@@ -7,6 +7,62 @@
             <script>
                 var partytown = {
                     debug: true,
+                    logCalls: true,
+                    logGetters: true,
+                    logSetters: true,
+                    get: (opts) => {
+                        console.log('get:', opts);
+                        if ( opts.nodeName === '#document' && 'cookie' === opts.name ) {
+                            return '';
+                        }
+                        return opts.continue;
+                    },
+                    set: (opts) => {
+                        console.log('set:', opts);
+                        // Block cookie access.
+                        if ( opts.nodeName === '#document' && 'cookie' === opts.name ) {
+                            //return opts.prevent;
+                        }
+                        // Block setting innerHTML containing strings.
+                        if (opts.name === 'innerHTML') {
+                            const sanitizer = new Sanitizer(
+                                {
+                                    allowElements: [ 'b' ],
+                                    allowAttributes: []
+                                }
+                            );
+                            
+
+                            console.warn('BLOCKED', opts.value, sanitizer.sanitize(opts.value));
+                            return opts.prevent;
+                        }
+                        if (opts.name === 'backgroundColor') {
+                            //return opts.prevent;
+                            return 'lime';
+                        }
+                        return opts.continue;
+                    },
+                    apply: (opts) => {
+                        // @todo What can we do with this hook???
+                        console.log('apply:', opts.name);
+                        if ( opts.constructor === 'Window' && ( opts.name.startsWith( 'localStorage.' ) || opts.name.startsWith( 'sessionStorage.' ) ) ) {
+                            console.info(opts.name);
+                            //return opts.prevent;
+                        }
+
+
+                        //if ('createElement' === opts.name && opts.args[0] === 'IMG') {
+                        //    // This results in: Error finding instance "16n78e3h910" on window 1
+                        //    return false;
+                        //}
+                        return opts.continue;
+                        // @todo This needs to return HookContinue
+                    },
+                    //logImageReqeusts: true,
+                    logMainAccess: true,
+                    //logScriptExecution: true,
+                    //logSendBeaconRequests: true,
+                    //logStackTraces: true
                 };
             </script>
             <script>
@@ -28,7 +84,7 @@
     </head>
     <body>
         <h1>Partytown Test</h1>
-
+<!--
         <p>
             The following paragraph is updated with a script that has {{blocking_time}}ms of blocking JS.
 
@@ -45,6 +101,7 @@
             <em>Loading...</em>
         </div>
         <script id="blocking-script" type="{{ script_content_type }}" data-blocking-time="{{ blocking_time }}">
+            document.body.style.backgroundColor = 'red';
             const blockingTime = parseInt( document.currentScript.dataset.blockingTime, 10 );
 
             setInterval( () => {
@@ -60,7 +117,7 @@
         </script>
 
         <p>If the following emoji is not animated smoothly, then there is JS blocking on the main thread:</p>
-
+-->
         <!-- Hat tip https://codepen.io/m_uzair/pen/gOrjYOz -->
         <p>
             <span id="spinner">🌀</span>
@@ -90,6 +147,63 @@
             rAF = requestAnimationFrame(draw);
         }
         draw();
+        </script>
+
+        <div id="test">
+            Target
+        </div>
+        <script type="notext/partytown">
+       
+
+        const container = document.getElementById('test');
+        const img = document.createElement('img');
+        // @todo We could block the creation of the img entirely.
+        // @todo I want to be able to block the insertion of this element since it lacks width/height.
+        img.src = 'https://source.unsplash.com/collection/928423/640x480';
+        img.setAttribute( 'onclick', 'console.info("clicked")' );
+        img.addEventListener( 'click', () => { console.info('click2') } );
+        img.onload = 'console.log("loaded");';
+
+        container.appendChild(img);
+
+        const span = document.createElement('span');
+        span.innerHTML = '<b>I am a span!</b>';
+        container.appendChild(span);
+
+        const script = document.createElement('script');
+        script.textContent = 'console.warn("I AM A PARTYTOWN SCRIPT")';
+        container.appendChild(script);
+
+        container.setAttribute('title', 'hello');
+        let tooltip = container.title;
+        container.title = `${tooltip} world!`
+        container.style.backgroundColor = 'red';
+
+        </script>
+
+        <script type="notext/partytown">
+        
+            //console.info( `document.cookie == ${document.cookie}` );
+            //document.cookie = 'foo2=bar2';
+            //localStorage.setItem( 'greeting', 'Hello World' );
+            console.info( 'I AM GREETED:', localStorage.getItem( 'greeting' ) );
+            //localStorage.removeItem( 'greeting' );
+            //localStorage.clear();
+            //localStorage.ts2 = '123'
+//
+            //// Problem: This is not being proxied.
+            //localStorage.ts = new Date().valueOf();
+            //console.info( localStorage.ts );
+//
+            //console.info( localStorage.proptest );
+            //console.info(localStorage.getItem('proptest'))
+
+        </script>
+
+        <script type="text/partytown">
+        document.getElementById('test').innerHTML = '<b>TARGETED!</b>';
+        document.getElementById('test').innerHTML += '<' + 'script>hello</' + 'script>';
+            console.info(window.Sanitizer);
         </script>
 
         <footer>

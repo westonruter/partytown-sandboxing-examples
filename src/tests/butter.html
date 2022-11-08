@@ -1,95 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf8">
-        <title>Butter Test</title>
-        <style>
-            #blocking-script-output {
-                margin-left: 20px;
-                padding-left: 20px;
-                border-left: solid 1px gray;
-            }
-            footer {
-                margin-top: 1em;
-                padding-top: 1em;
-                border-top: solid 1px gray;
-            }
-        </style>
-        <script>
-            var partytown = {
-                debug: true,
-                logCalls: true,
-                logGetters: true,
-                logSetters: true,
-            };
-        </script>
-    </head>
-    <body>
-        <h1>Butter Test</h1>
+  <head>
+    <meta charset="utf8" />
+    <title>Butter Test</title>
+    <script>
+      var partytown = {
+        debug: true,
+        logCalls: true,
+        logGetters: true,
+        logSetters: true,
+      };
+    </script>
+  </head>
+  <body>
+    <h1>Butter Test</h1>
 
-        <p>
-            The time in the following paragraph is updated each second with a script that has a lot of blocking time.
-        </p>
+    <p>
+      The time in the following paragraph is updated each second with a script
+      that has a lot of blocking time.
+    </p>
 
-        <div id="blocking-script-output">
-            <em>Loading...</em>
-        </div>
-        <script id="blocking-script" type="text/javascript">
-            const params = new URLSearchParams(location.search);
-            
-            let blockingTime = 0;
-            if (params.has('blocking-time')) {
-                blockingTime = parseInt(params.get('blocking-time'), 10);
-            }
-            if (! blockingTime) {
-                blockingTime = 300;
-            }
+    <div
+      id="blocking-script-output"
+      style="margin-left: 20px; padding-left: 20px; border-left: solid 1px gray"
+    >
+      <em>Loading...</em>
+    </div>
+    <script type="text/javascript">
+      const params = new URLSearchParams(location.search);
 
-            setInterval( () => {
-                const startDate = new Date();
+      let blockingTime = 0;
+      if (params.has("blocking-time")) {
+        blockingTime = parseInt(params.get("blocking-time"), 10);
+      }
+      if (!blockingTime) {
+        blockingTime = 300;
+      }
 
-                // Cause some serious jank!
-                while ( (new Date()).valueOf() - startDate.valueOf() < blockingTime ) {}
+      setInterval(() => {
+        const startDate = new Date();
 
-                const time = (new Date()).toLocaleTimeString();
+        // Cause some serious jank!
+        while (new Date().valueOf() - startDate.valueOf() < blockingTime) {}
 
-                document.getElementById( 'blocking-script-output' ).innerText = `Hello from blocking script! The current time is ${time}.`;
-            }, 1000 );
-        </script>
+        const time = new Date().toLocaleTimeString();
 
-        <p>If the following emoji is not animated smoothly, then there is JS blocking on the main thread (and thus Partytown is enabled):</p>
+        document.getElementById(
+          "blocking-script-output"
+        ).innerText = `Hello from blocking script! The current time is ${time}.`;
+      }, 1000);
+    </script>
 
-        <!-- Hat tip https://codepen.io/m_uzair/pen/gOrjYOz -->
-        <p>
-            <span id="spinner">🌀</span>
-        </p>
-        <style>
-            #spinner {
-                display: inline-block;
-                font-size: 100px;
-            }
-        </style>
+    <p>
+      If the following emoji is not animated smoothly, then there is JS blocking
+      on the main thread (and thus Partytown is enabled):
+    </p>
 
-        <!-- Intentionally ran on main thread -->
-        <script>
-        const spinner = document.getElementById('spinner');
+    <!-- Hat tip https://codepen.io/m_uzair/pen/gOrjYOz -->
+    <p>
+      <span id="spinner">🌀</span>
+    </p>
+    <style>
+      #spinner {
+        display: inline-block;
+        font-size: 100px;
+      }
+    </style>
 
-        let rotateCount = 0;
-        let startTime = null;
-        let rAF;
+    <!-- Intentionally ran on main thread -->
+    <script>
+      const spinner = document.getElementById("spinner");
 
-        function draw(timestamp) {
-            if(!startTime) {
-                startTime = timestamp;
-            }
-            rotateCount = (timestamp - startTime) / 3;
-            if(rotateCount > 359) {
-                rotateCount %= 360;
-            }
-            spinner.style.transform = `rotate(-${rotateCount}deg)`;
-            rAF = requestAnimationFrame(draw);
+      let rotateCount = 0;
+      let startTime = null;
+      let rAF;
+
+      function draw(timestamp) {
+        if (!startTime) {
+          startTime = timestamp;
         }
-        draw();
-        </script>
-    </body>
+        rotateCount = (timestamp - startTime) / 3;
+        if (rotateCount > 359) {
+          rotateCount %= 360;
+        }
+        spinner.style.transform = `rotate(-${rotateCount}deg)`;
+        rAF = requestAnimationFrame(draw);
+      }
+      draw();
+    </script>
+  </body>
 </html>

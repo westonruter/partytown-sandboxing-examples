@@ -30,7 +30,8 @@ fastify.register(require("@fastify/view"), {
 });
 
 const partytownInlineScript = fs.readFileSync(
-  path.join(__dirname, "public/~partytown/partytown.js")
+  path.join(__dirname, "public/~partytown/partytown.js"),
+  'utf8'
 );
 
 fastify.get("/", function (request, reply) {
@@ -50,6 +51,47 @@ fastify.get("/", function (request, reply) {
     script_content_type: partytownEnabled ? 'text/partytown' : 'text/javascript'
   });
 });
+
+fastify.get("/tests/:test/", (request, reply) => {
+  const { test } = request.params;
+
+  if (!/^[a-z0-9-]+$/.test(test)) {
+    throw new Error('Invalid URL');
+  }
+
+  const testFilePath = path.join(__dirname, `src/tests/${test}.html`);
+  if (!fs.existsSync(testFilePath)) {
+    throw new Error('Not found');
+  }
+
+  let page = fs.readFileSync(
+    testFilePath,
+    'utf8'
+  );
+
+  const partytownEnabled = request.query.partytown === 'true' || ! ('partytown' in request.query);
+
+  if (partytownEnabled) {
+    page = page.replace('text/javascript', 'text/partytown');
+    page = page.replace('</head>', `<script>${partytownInlineScript}</script></head>`);
+    page = page.replace('</body>', '<a href="?partytown=false">Disable Partytown</a></body>');
+  } else {
+    page = page.replace('</body>', '<a href="?partytown=true">Enable Partytown</a></body>');
+  }
+
+  reply
+    .code(200)
+    .type('text/html')
+    .send(page);
+});
+
+// fastify.get("/tests/:test/:file", (request, reply) => {
+//   const { test } = request.params;
+
+//   const partytownInlineScript = fs.readFileSync(
+//     path.join(__dirname, `src/tests/${test}/index.html`)
+//   );
+// });
 
 // Run the server and report out to the logs
 fastify.listen(

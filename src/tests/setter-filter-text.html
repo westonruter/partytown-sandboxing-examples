@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf8" />
+    <title>Setter Filter Text Test</title>
+    <script>
+      var partytown = {
+        debug: true,
+        logCalls: true,
+        logGetters: true,
+        logSetters: true,
+        set: (opts) => {
+          if (opts.name === "innerText" || opts.name === "innerHTML" || opts.name === "textContent") {
+            return opts.value.replaceAll("Wordpress", "WordPress");
+          }
+          return opts.continue;
+        },
+      };
+    </script>
+    <style>
+      #output { font-size: 50px }
+    </style>
+  </head>
+  <body>
+    <h1>Setter Filter Text Test</h1>
+
+    <p>This demonstrates the use of the <code>set</code> hook to filter the text value of the following paragraph to <a href="https://developer.wordpress.org/reference/functions/capital_p_dangit/" target="_blank">capital_P_dangit</a>:</p>
+
+    <p id="output">Loading...</p>
+
+    <p>If the paragraph above reads "Wordpress" with a lower-case P, then Partytown is not sandboxing the script.</p>
+
+    <script type="text/javascript">
+      document.getElementById('output').textContent = 'Wordpress';
+    </script>
+  </body>
+</html>

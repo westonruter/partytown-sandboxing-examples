@@ -16,6 +16,7 @@
             "IMG" === arg.nodeName &&
             (!arg.width || !arg.height)
           ) {
+            console.warn( `Blocked insertion of unsized image: ${arg.outerHTML}` );
             return opts.prevent;
           }
           return opts.continue;

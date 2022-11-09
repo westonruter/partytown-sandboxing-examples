@@ -52,6 +52,7 @@
       let li, img;
 
       const tests = [
+        // See setter-filter-text.html
         (li) => {
           li.innerText =
             'Setting innerText, with Partytown ensuring capital P in "Wordpress".';
@@ -80,7 +81,6 @@
             this.style.outline = "solid 5px red";
           });
 
-          // @todo!!
           img.width = 40;
           img.height = 40;
           img.src =
@@ -111,6 +111,7 @@
             );
           li.appendChild(img);
         },
+        // See setter-filter-markup.html
         (li) => {
           li.innerHTML =
             "<b><i><u><s>Bold underline italics set via innerHTML with Partytown stripping out the strike-through</s></u></i></b>";

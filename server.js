@@ -80,6 +80,7 @@ fastify.get("/tests/:test/", (request, reply) => {
   }
 
   reply
+    .headers(crossOriginIsolationHeaders)
     .code(200)
     .type('text/html')
     .send(page);

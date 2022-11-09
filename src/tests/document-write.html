@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf8" />
+    <title>Testing document.write()</title>
+    <script>
+      var partytown = {
+        debug: true,
+        logCalls: true,
+        logGetters: true,
+        logSetters: true,
+        apply: (opts, args) => {
+          console.info(opts, args)
+          return opts.continue;
+        }
+      };
+    </script>
+  </head>
+  <body>
+    <h1>Testing document.write()</h1>
+
+    <p>
+      Calling <code>document.write()</code> is generally a bad idea. Calling it
+      during page load forces the browser to pause rendering while waiting for a
+      script to execute. Even worse, calling after the page loads will cause the
+      entire page to be replaced with whatever is written. This means
+      `document.write()` is inherently bad since it cannot be executed
+      asynchronously. Indeed, attempting to call
+      <code>document.write()</code> from a <code>module</code> script results in
+      a warning in DevTools: <q>Failed to execute 'write' on 'Document': It isn't
+      possible to write into a document from an asynchronously-loaded external
+      script unless it is explicitly opened.</q> 
+      Interestingly, Partytown does not override <code>document.write()</code> by default
+      but we can enable async execution.
+    </p>
+
+    <script type="text/javascript">
+      document.write = ( text ) => {
+        const div = document.createElement('div');
+        div.innerHTML = text;
+        if ( document.currentScript ) {
+          document.currentScript.parentNode.insertBefore( div, document.currentScript );
+        } else {
+          document.body.appendChild( div );
+        }
+      };
+    </script>
+
+    <p>Now to demonstrate intercepting post-load <code>document.write()</code> calls in a script that has been made asynchronous:</p>
+
+    <button>Simulate async call to <code>document.write()</code></button>
+
+    <script type="text/javascript">
+      document.write("<p>This paragraph was written with <code>document.write()</code> during page load.</p>");
+
+      document.querySelector('button').addEventListener('click', () => {
+        document.write( '<p>This content was injected with <code>document.write()</code> after page load!</p>' );
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf8" />
+    <title>Allowlist Test</title>
+    <script>
+      var partytown = {
+        debug: true,
+        logCalls: true,
+        logGetters: true,
+        logSetters: true,
+        apply: (opts) => {
+          console.info("apply", opts);
+
+          if (opts.name === "addEventListener") {
+            return opts.prevent;
+          } else if (
+            opts.name === "setAttribute" &&
+            opts.args.length > 0 &&
+            opts.args[1].startsWith("on")
+          ) {
+            return opts.prevent;
+          }
+
+          return opts.continue;
+        },
+        set: (opts) => {
+          if (opts.name === "innerText") {
+            return opts.value.replaceAll("Wordpress", "WordPress");
+          } else if (opts.name === "innerHTML") {
+            return opts.value.replace(/<\/?s[^>]*>/, "");
+          } else if (opts.name.startsWith("on")) {
+            return opts.prevent;
+          }
+
+          console.info("set", opts);
+          return opts.continue;
+        },
+      };
+    </script>
+  </head>
+  <body>
+    <h1>Allowlist Test</h1>
+
+    <p>Prevent insertion of DOM elements except those which are allowed.</p>
+
+    <ol id="output"></ol>
+
+    <script type="text/javascript">
+      const output = document.getElementById("output");
+
+      let li, img;
+
+      const tests = [
+        (li) => {
+          li.innerText =
+            'Setting innerText, with Partytown ensuring capital P in "Wordpress".';
+        },
+        (li) => {
+          li.innerText =
+            'Setting innerText, with Partytown ensuring capital P in "Wordpress".';
+        },
+        (li) => {
+          li.innerHTML =
+            "Partytown prevents the following image from getting a load event handler added which adds a red border:<br>";
+          img = document.createElement("img");
+
+          /*
+           * Note: the follw fails in Partytown. It results in an error:
+           *
+           * > ReferenceError: thi$ is not defined
+           *
+           * Partytown is setting the value to be:
+           *
+           *   (thi$(this)?window:this).style.outline = "solid 5px red"
+           */
+          // img.setAttribute( 'onload', 'this.style.outline = "solid 5px red"' );
+
+          img.onload = function () {
+            this.style.border = "solid 5px red";
+          };
+
+          img.addEventListener("load", function () {
+            this.style.outline = "solid 5px red";
+          });
+
+          // @todo!!
+          img.width = 40;
+          img.height = 40;
+          img.src =
+            "data:image/svg+xml;base64," +
+            btoa(
+              `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="800" baseProfile="full" viewBox="-21 -21 42 42">
+                <defs>
+                  <radialGradient id="b" cx=".2" cy=".2" r=".5" fx=".2" fy=".2">
+                    <stop offset="0" stop-color="#fff" stop-opacity=".7"/>
+                    <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+                  </radialGradient>
+                  <radialGradient id="a" cx=".5" cy=".5" r=".5">
+                    <stop offset="0" stop-color="#ff0"/>
+                    <stop offset=".75" stop-color="#ff0"/>
+                    <stop offset=".95" stop-color="#ee0"/>
+                    <stop offset="1" stop-color="#e8e800"/>
+                  </radialGradient>
+                </defs>
+                <circle r="20" fill="url(#a)" stroke="#000" stroke-width=".15"/>
+                <circle r="20" fill="url(#b)"/>
+                <g id="c">
+                  <ellipse cx="-6" cy="-7" rx="2.5" ry="4"/>
+                  <path fill="none" stroke="#000" stroke-linecap="round" stroke-width=".5" d="M10.6 2.7a4 4 0 0 0 4 3"/>
+                </g>
+                <use xlink:href="#c" transform="scale(-1 1)"/>
+                <path fill="none" stroke="#000" stroke-width=".75" d="M-12 5a13.5 13.5 0 0 0 24 0 13 13 0 0 1-24 0"/>
+              </svg>`
+            );
+          li.appendChild(img);
+        },
+        (li) => {
+          li.innerHTML =
+        "<b><i><u><s>Bold underline italics set via innerHTML with Partytown stripping out the strike-through</s></u></i></b>";
+        }
+      ];
+
+      for ( const test of tests ) {
+        const li = document.createElement("li");
+        test(li);
+        output.appendChild(li);
+      }
+    </script>
+  </body>
+</html>

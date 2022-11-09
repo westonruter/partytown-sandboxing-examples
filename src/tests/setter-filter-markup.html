@@ -11,33 +11,49 @@
         logSetters: true,
         set: (opts) => {
           if (opts.name === "innerHTML") {
-            let value = opts.value;
-            value = value.replace(/(<\/?)b(?=\s|>)/g, '$1strong' );
-            return value;
+            /*
+             * Note: This should instead use the new Sanitizer API.
+             * However, it is not available in a Worker context. This could be
+             * resolved by adding hooks which run in the host context instead
+             * of only running in the client context.
+             */
+            return opts.value.replace(/(<\/?)b(?=\s|>)/g, "$1strong");
           }
           return opts.continue;
         },
       };
     </script>
     <style>
-      #output { font-size: 50px }
-      #output b { color:red; }
-      #output b::after { content: " but not <strong> :(" }
-      #output strong { color: green; }
-      #output strong::after { content: " and <strong>!" }
+      #output {
+        font-size: 50px;
+      }
+      #output b {
+        color: red;
+      }
+      #output b::after {
+        content: " but not <strong> :(";
+      }
+      #output strong {
+        color: green;
+      }
+      #output strong::after {
+        content: " and <strong>!";
+      }
     </style>
   </head>
   <body>
     <h1>Setter Filter Markup Test</h1>
 
-    <p>This demonstates filtering markup inserted with <code>innerHTML</code>:</p>
+    <p>
+      This demonstates filtering markup inserted with <code>innerHTML</code>:
+    </p>
 
     <p id="output">Loading...</p>
 
     <p>Script is sandboxed by Partytown if the text above is green.</p>
 
     <script type="text/javascript">
-      document.getElementById('output').innerHTML = '<b>This text is bold</b>';
+      document.getElementById("output").innerHTML = "<b>This text is bold</b>";
     </script>
   </body>
 </html>

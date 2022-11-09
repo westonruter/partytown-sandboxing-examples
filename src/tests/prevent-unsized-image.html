@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf8" />
+    <title>Prevent Unsized Image</title>
+    <script>
+      var partytown = {
+        debug: true,
+        logCalls: true,
+        logGetters: true,
+        logSetters: true,
+        apply: (opts) => {
+          const [arg] = opts.args;
+          if (
+            opts.name === "insertBefore" &&
+            "IMG" === arg.nodeName &&
+            (!arg.width || !arg.height)
+          ) {
+            return opts.prevent;
+          }
+          return opts.continue;
+        },
+      };
+    </script>
+    <style>
+      img[width][height] { 
+        border: solid 4px green;
+       }
+      img:not([width][height]) { 
+        border: solid 4px red;
+       }
+    </style>
+  </head>
+  <body>
+    <h1>Prevent Unsized Image</h1>
+
+    <p>
+      This adds two images, one sized with width/height attributes and another unsized without such dimensions provided.
+      The sized image has a green border and the unsized one has a red border.
+    </p>
+
+    <h2>Sized Image</h2>
+    <div id="sized"></div>
+
+    <h2>Unsized Image</h2>
+    <div id="unsized"></div>
+
+    <p>When Partytown is sandboxing, there should be no image appearing for unsized.</p>
+
+    <script type="text/javascript">
+      const sizedImg = document.createElement("img");
+      sizedImg.src = "https://source.unsplash.com/collection/928423/320x240";
+      sizedImg.width = 320;
+      sizedImg.height = 240;
+      document.getElementById('sized').appendChild(sizedImg);
+
+      const unsizedImg = document.createElement("img");
+      unsizedImg.src = "https://source.unsplash.com/collection/928423/320x240";
+      document.getElementById("unsized").appendChild(unsizedImg);
+    </script>
+  </body>
+</html>

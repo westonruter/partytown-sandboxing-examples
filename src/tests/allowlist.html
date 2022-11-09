@@ -57,10 +57,6 @@
             'Setting innerText, with Partytown ensuring capital P in "Wordpress".';
         },
         (li) => {
-          li.innerText =
-            'Setting innerText, with Partytown ensuring capital P in "Wordpress".';
-        },
-        (li) => {
           li.innerHTML =
             "Partytown prevents the following image from getting a load event handler added which adds a red border:<br>";
           img = document.createElement("img");
@@ -117,11 +113,21 @@
         },
         (li) => {
           li.innerHTML =
-        "<b><i><u><s>Bold underline italics set via innerHTML with Partytown stripping out the strike-through</s></u></i></b>";
-        }
+            "<b><i><u><s>Bold underline italics set via innerHTML with Partytown stripping out the strike-through</s></u></i></b>";
+        },
+        /*
+         * The following test with attribute nodes fails because apparently setAttributeNode is not implemented properly.
+         * > Failure: Error: TypeError: Failed to execute 'setAttributeNode' on 'Element': parameter 1 is not of type 'Attr'.
+         */
+        // (li) => {
+        //   li.innerText = 'Am I green?';
+        //   const attr = document.createAttribute('style');
+        //   attr.value = 'color:red';
+        //   li.setAttributeNode(attr);
+        // }
       ];
 
-      for ( const test of tests ) {
+      for (const test of tests) {
         const li = document.createElement("li");
         test(li);
         output.appendChild(li);

@@ -39,7 +39,7 @@
               return opts.continue;
             }
             if ( ! isInsideSandbox )  {
-              return opts.prevent;
+              return null; // Remember: opts.prevent is only in the setter hook.
             }
           }
           return opts.continue;

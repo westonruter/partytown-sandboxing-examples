@@ -17,17 +17,17 @@
             (!arg.width || !arg.height)
           ) {
             console.warn( `Blocked insertion of unsized image: ${arg.outerHTML}` );
-            return opts.prevent;
+            return null; // Just has to not be opts.continue.
           }
           return opts.continue;
         },
       };
     </script>
     <style>
-      img[width][height] { 
+      img[width][height] {
         border: solid 4px green;
        }
-      img:not([width][height]) { 
+      img:not([width][height]) {
         border: solid 4px red;
        }
     </style>

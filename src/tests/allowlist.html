@@ -13,13 +13,13 @@
           console.info("apply", opts);
 
           if (opts.name === "addEventListener") {
-            return opts.prevent;
+            return undefined;
           } else if (
             opts.name === "setAttribute" &&
             opts.args.length > 0 &&
             opts.args[1].startsWith("on")
           ) {
-            return opts.prevent;
+            return undefined;
           }
 
           return opts.continue;

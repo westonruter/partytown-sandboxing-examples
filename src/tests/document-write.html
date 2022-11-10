@@ -29,9 +29,10 @@
       <code>document.write()</code> from a <code>module</code> script results in
       a warning in DevTools: <q>Failed to execute 'write' on 'Document': It isn't
       possible to write into a document from an asynchronously-loaded external
-      script unless it is explicitly opened.</q> 
+      script unless it is explicitly opened.</q>
       Interestingly, Partytown does not override <code>document.write()</code> by default
-      but we can enable async execution.
+      but we can enable async execution by implementing it ourselves. Note that this works
+      the same with and without Partytown.
     </p>
 
     <script type="text/javascript">

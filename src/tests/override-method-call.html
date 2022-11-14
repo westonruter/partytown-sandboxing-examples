@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf8" />
+    <title>Override Method Call</title>
+    <script>
+      var partytown = {
+        debug: true,
+        logCalls: true,
+        logGetters: true,
+        logSetters: true,
+        apply(opts) {
+          if (opts.name === 'alert') {
+            const doc = opts.window.document;
+            const dialog = doc.createElement('dialog');
+            dialog.open = true;
+            dialog.appendChild( doc.createTextNode(opts.args[0]) );
+            doc.body.appendChild(dialog);
+            return undefined;
+          }
+          return opts.continue;
+        },
+      };
+    </script>
+  </head>
+  <body>
+    <h1>Override Method Call</h1>
+
+    <p>
+      This demonstrates using Partytown to replace a <code>alert()</code> call with a <code>dialog</code> element. Note: This only works with a <a href="https://github.com/BuilderIO/partytown/pull/301">patched</a> version of Partytown since normally the DOM is not exposed to hooks.
+    </p>
+
+    <script type="text/javascript">
+      window.self.alert( 'This text is coming from an alert() call!' );
+    </script>
+  </body>
+</html>

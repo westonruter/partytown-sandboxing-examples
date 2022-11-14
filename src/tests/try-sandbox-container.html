@@ -21,10 +21,9 @@
             return opts.continue;
           }
 
-
           let isInsideDocument = false;
           let isInsideSandbox = false;
-          if ('parentNode' in opts.instance) { // @todo This fails for the style propertie which is a CSSStyleDeclaration.
+          if ('parentNode' in opts.instance) { // @todo This fails for the style properties which is a CSSStyleDeclaration.
             let parent = instance;
             while (parent) {
               if (parent == instance.ownerDocument.documentElement ) {
@@ -46,6 +45,7 @@
         },
       };
     </script>
+
     <style>
       #sandbox {
         outline: dotted 1px black;
@@ -56,7 +56,8 @@
   <body>
     <h1>Try Sandbox Container</h1>
 
-    <p><strong>Note: This test will not work because <code>instance</code> is not exposed in hooks and even when it is there may not be a reference to the parent node (as in the case of <code>style</code> property) in order to determine whether it is inside the sandbox.</code>)</strong></p>
+    <p><strong>Note: This test depends on a <a href="https://github.com/BuilderIO/partytown/pull/301">patch</a> to work in order to expose the <code>instance</code> in the <code>HookOptions</code>.
+      This is not entirely sufficient, however, as in some cases DOM objects do not have references to their parent node, such as in the case of a <code>style</code> which is a <code>CSSStyleDeclaration</code>.</strong></p>
 
     <div id="sandbox">
       <div>
@@ -66,7 +67,9 @@
 
     <p class="test">This paragraph is outside the sandbox.</p>
 
-    <p>When the page load, the desire is to make sure that only the paragraphs inside of the sandbox are muted. Mutation is shown as the paragraph being given a red text color.</p>
+    <hr>
+
+    <p>When the page loads, the sandboxing is supposed to make sure that only the paragraph inside of the sandbox is mutated with the text node appended.</p>
 
     <script type="text/javascript">
       for ( const p of document.querySelectorAll( '.test' ) ) {

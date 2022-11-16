@@ -6,15 +6,13 @@
     <script>
       var partytown = {
         debug: true,
-
-        get: (opts) => {
+        get(opts) {
           if (opts.nodeName === "#document" && "cookie" === opts.name) {
             return "partying=true";
           }
           return opts.continue;
         },
-
-        set: (opts) => {
+        set(opts) {
           if (opts.nodeName === "#document" && "cookie" === opts.name) {
             console.warn(`Blocked setting cookie to ${opts.value}`);
             return opts.prevent;

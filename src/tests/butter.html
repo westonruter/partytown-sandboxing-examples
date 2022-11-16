@@ -38,10 +38,9 @@
       }
 
       setInterval(() => {
-        const startDate = new Date();
-
         // Cause some serious jank!
-        while (new Date().valueOf() - startDate.valueOf() < blockingTime) {}
+        const target = performance.now() + blockingTime;
+        while (performance.now() < target);
 
         const time = new Date().toLocaleTimeString();
 

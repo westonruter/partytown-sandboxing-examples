@@ -9,14 +9,14 @@
         logCalls: true,
         logGetters: true,
         logSetters: true,
-        apply: (opts) => {
+        apply(opts) {
           const [arg] = opts.args;
           if (
             opts.name === "insertBefore" &&
-            "IMG" === arg.nodeName &&
+            arg.nodeName === "IMG" &&
             (!arg.width || !arg.height)
           ) {
-            console.warn( `Blocked insertion of unsized image: ${arg.outerHTML}` );
+            console.warn(`Blocked insertion of unsized image: ${arg.outerHTML}`);
             return null; // Just has to not be opts.continue.
           }
           return opts.continue;

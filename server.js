@@ -31,17 +31,18 @@ fastify.register(require("@fastify/view"), {
 
 const partytownInlineScript = fs.readFileSync(
   path.join(__dirname, "public/~partytown/partytown.js"),
-  'utf8'
+  "utf8"
 );
 
 // Load homepage.
 fastify.get("/", function (request, reply) {
   reply.headers(crossOriginIsolationHeaders);
 
-  const partytownEnabled = request.query.partytown === 'true' || ! ('partytown' in request.query);
+  const partytownEnabled =
+    request.query.partytown === "true" || !("partytown" in request.query);
 
-  let blockingTime = parseInt( request.query.blocktime, 10 );
-  if ( isNaN( blockingTime ) || blockingTime <= 0 ) {
+  let blockingTime = parseInt(request.query.blocktime, 10);
+  if (isNaN(blockingTime) || blockingTime <= 0) {
     blockingTime = 300;
   }
 
@@ -49,7 +50,9 @@ fastify.get("/", function (request, reply) {
     partytown_inline_script: partytownInlineScript,
     using_partytown: partytownEnabled,
     blocking_time: blockingTime,
-    script_content_type: partytownEnabled ? 'text/partytown' : 'text/javascript'
+    script_content_type: partytownEnabled
+      ? "text/partytown"
+      : "text/javascript",
   });
 });
 
@@ -58,30 +61,36 @@ fastify.get("/tests/:test", (request, reply) => {
   const { test } = request.params;
 
   if (!/^[a-z0-9-]+$/.test(test)) {
-    throw new Error('Invalid URL');
+    throw new Error("Invalid URL");
   }
 
   const testFilePath = path.join(__dirname, `src/tests/${test}.html`);
   if (!fs.existsSync(testFilePath)) {
-    throw new Error('Not found');
+    throw new Error("Not found");
   }
 
-  let page = fs.readFileSync(
-    testFilePath,
-    'utf8'
-  );
+  let page = fs.readFileSync(testFilePath, "utf8");
 
   // Inject logic to toggle whether Partytown is enabled.
-  const partytownEnabled = request.query.partytown === 'true' || ! ('partytown' in request.query);
-  if (partytownEnabled) {
-    page = page.replaceAll('text/javascript', 'text/partytown');
-    page = page.replace('</head>', `<script>${partytownInlineScript}</script></head>`);
-    page = page.replace('</body>', '<p><a href="?partytown=false">Disable Partytown</a></p></body>');
+  if (request.query.partytown === "true" || !("partytown" in request.query)) {
+    page = page.replaceAll("text/javascript", "text/partytown");
+    page = page.replace(
+      "</head>",
+      `<script>${partytownInlineScript}</script></head>`
+    );
+    page = page.replace(
+      "</body>",
+      '<p><a href="?partytown=false">Disable Partytown</a></p></body>'
+    );
   } else {
-    page = page.replace('</body>', '<p><a href="?partytown=true">Enable Partytown</a></p></body>');
+    page = page.replace(
+      "</body>",
+      '<p><a href="?partytown=true">Enable Partytown</a></p></body>'
+    );
   }
 
-  page = page.replace('</body>',
+  page = page.replace(
+    "</body>",
     `
       <hr>
       <nav>
@@ -95,7 +104,7 @@ fastify.get("/tests/:test", (request, reply) => {
   reply
     .headers(crossOriginIsolationHeaders)
     .code(200)
-    .type('text/html')
+    .type("text/html")
     .send(page);
 });
 

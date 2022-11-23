@@ -34,6 +34,7 @@ const partytownInlineScript = fs.readFileSync(
   'utf8'
 );
 
+// Load homepage.
 fastify.get("/", function (request, reply) {
   reply.headers(crossOriginIsolationHeaders);
 
@@ -52,7 +53,8 @@ fastify.get("/", function (request, reply) {
   });
 });
 
-fastify.get("/tests/:test/", (request, reply) => {
+// Load test.
+fastify.get("/tests/:test", (request, reply) => {
   const { test } = request.params;
 
   if (!/^[a-z0-9-]+$/.test(test)) {
@@ -69,8 +71,8 @@ fastify.get("/tests/:test/", (request, reply) => {
     'utf8'
   );
 
+  // Inject logic to toggle whether Partytown is enabled.
   const partytownEnabled = request.query.partytown === 'true' || ! ('partytown' in request.query);
-
   if (partytownEnabled) {
     page = page.replaceAll('text/javascript', 'text/partytown');
     page = page.replace('</head>', `<script>${partytownInlineScript}</script></head>`);
@@ -79,20 +81,23 @@ fastify.get("/tests/:test/", (request, reply) => {
     page = page.replace('</body>', '<p><a href="?partytown=true">Enable Partytown</a></p></body>');
   }
 
+  page = page.replace('</body>',
+    `
+      <hr>
+      <nav>
+        <a href="/">Partytown Sandboxing Tests</a>,
+        <a href="https://weston.ruter.net/">@westonruter</a>
+      </nav>
+      </body>
+    `
+  );
+
   reply
     .headers(crossOriginIsolationHeaders)
     .code(200)
     .type('text/html')
     .send(page);
 });
-
-// fastify.get("/tests/:test/:file", (request, reply) => {
-//   const { test } = request.params;
-
-//   const partytownInlineScript = fs.readFileSync(
-//     path.join(__dirname, `src/tests/${test}/index.html`)
-//   );
-// });
 
 // Run the server and report out to the logs
 fastify.listen(

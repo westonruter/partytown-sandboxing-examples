@@ -36,24 +36,8 @@ const partytownInlineScript = fs.readFileSync(
 
 // Load homepage.
 fastify.get("/", function (request, reply) {
-  reply.headers(crossOriginIsolationHeaders);
-
-  const partytownEnabled =
-    request.query.partytown === "true" || !("partytown" in request.query);
-
-  let blockingTime = parseInt(request.query.blocktime, 10);
-  if (isNaN(blockingTime) || blockingTime <= 0) {
-    blockingTime = 300;
-  }
-
-  reply.view("/src/index.hbs", {
-    partytown_inline_script: partytownInlineScript,
-    using_partytown: partytownEnabled,
-    blocking_time: blockingTime,
-    script_content_type: partytownEnabled
-      ? "text/partytown"
-      : "text/javascript",
-  });
+  const stream = fs.createReadStream(path.join(__dirname, `src/index.html`));
+  reply.type("text/html").send(stream);
 });
 
 // Load test.

@@ -22,13 +22,6 @@ fastify.register(require("@fastify/static"), {
   },
 });
 
-// point-of-view is a templating manager for fastify
-fastify.register(require("@fastify/view"), {
-  engine: {
-    handlebars: require("handlebars"),
-  },
-});
-
 const partytownInlineScript = fs.readFileSync(
   path.join(__dirname, "public/~partytown/partytown.js"),
   "utf8"

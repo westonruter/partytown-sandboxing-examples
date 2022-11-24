@@ -64,12 +64,12 @@ fastify.get("/examples/:example", (request, reply) => {
     );
     page = page.replace(
       "</body>",
-      '<p><a href="?partytown=false">Disable Partytown</a></p></body>'
+      '<p><strong><a href="?partytown=false" style="color:red">Disable Partytown</a></strong></p></body>'
     );
   } else {
     page = page.replace(
       "</body>",
-      '<p><a href="?partytown=true">Enable Partytown</a></p></body>'
+      '<p><strong><a href="?partytown=true" style="color:green">Enable Partytown</a></strong></p></body>'
     );
   }
 

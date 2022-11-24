@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf8" />
-    <title>Allowlist Test</title>
+    <title>Allowlist</title>
     <script>
       var partytown = {
         debug: true,
@@ -40,7 +40,7 @@
     </script>
   </head>
   <body>
-    <h1>Allowlist Test</h1>
+    <h1>Allowlist Examples</h1>
 
     <p>Prevent insertion of DOM elements except those which are allowed.</p>
 
@@ -51,7 +51,7 @@
 
       let li, img;
 
-      const tests = [
+      const examples = [
         // See setter-filter-text.html
         (li) => {
           li.innerText =
@@ -117,7 +117,7 @@
             "<b><i><u><s>Bold underline italics set via innerHTML with Partytown stripping out the strike-through</s></u></i></b>";
         },
         /*
-         * The following test with attribute nodes fails because apparently setAttributeNode is not implemented properly.
+         * The following example with attribute nodes fails because apparently setAttributeNode is not implemented properly.
          * > Failure: Error: TypeError: Failed to execute 'setAttributeNode' on 'Element': parameter 1 is not of type 'Attr'.
          */
         // (li) => {
@@ -128,9 +128,9 @@
         // }
       ];
 
-      for (const test of tests) {
+      for (const example of examples) {
         const li = document.createElement("li");
-        test(li);
+        example(li);
         output.appendChild(li);
       }
     </script>

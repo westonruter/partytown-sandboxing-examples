@@ -53,23 +53,22 @@
   <body>
     <h1>Sandbox Container</h1>
 
-    <p>Note: This test depends on a <a href="https://github.com/BuilderIO/partytown/pull/301">patch</a> to work in order to expose the <code>instance</code> in the <code>HookOptions</code>.
-      This is not entirely sufficient, however, as in some cases DOM objects do not have references to their parent node, such as in the case of a <code>style</code> which is a <code>CSSStyleDeclaration</code>.</p>
+    <p>Note that the sandboxing is not very robust as in some cases DOM objects do not have references to their parent node, such as in the case of a <code>style</code> which is a <code>CSSStyleDeclaration</code>.</p>
 
     <div id="sandbox">
       <div>
-        <p class="test">This paragraph is inside the sandbox.</p>
+        <p class="example">This paragraph is inside the sandbox.</p>
       </div>
     </div>
 
-    <p class="test">This paragraph is outside the sandbox.</p>
+    <p class="example">This paragraph is outside the sandbox.</p>
 
     <hr>
 
     <p>When the page loads, the sandboxing is supposed to make sure that only the paragraph inside of the sandbox is mutated with the text node appended.</p>
 
     <script type="text/javascript">
-      for ( const p of document.querySelectorAll( '.test' ) ) {
+      for ( const p of document.querySelectorAll( '.example' ) ) {
         const text = document.createTextNode( ' This text was added by the sandboxed script!' );
         p.appendChild(text);
       }

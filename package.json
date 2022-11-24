@@ -1,7 +1,7 @@
 {
-    "name": "partytown-test",
+    "name": "partytown-sandboxing-examples",
     "version": "0.1.0",
-    "description": "Testing Partytown.js",
+    "description": "Examples of sandboxing with Partytown",
     "main": "server.js",
     "scripts": {
         "start": "node server.js",

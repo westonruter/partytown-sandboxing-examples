@@ -40,20 +40,20 @@ fastify.get("/", function (request, reply) {
   reply.type("text/html").send(stream);
 });
 
-// Load test.
-fastify.get("/tests/:test", (request, reply) => {
-  const { test } = request.params;
+// Load example.
+fastify.get("/examples/:example", (request, reply) => {
+  const { example } = request.params;
 
-  if (!/^[a-z0-9-]+$/.test(test)) {
+  if (!/^[a-z0-9-]+$/.test(example)) {
     throw new Error("Invalid URL");
   }
 
-  const testFilePath = path.join(__dirname, `src/tests/${test}.html`);
-  if (!fs.existsSync(testFilePath)) {
+  const exampleFilePath = path.join(__dirname, `src/examples/${example}.html`);
+  if (!fs.existsSync(exampleFilePath)) {
     throw new Error("Not found");
   }
 
-  let page = fs.readFileSync(testFilePath, "utf8");
+  let page = fs.readFileSync(exampleFilePath, "utf8");
 
   // Inject logic to toggle whether Partytown is enabled.
   if (request.query.partytown === "true" || !("partytown" in request.query)) {
@@ -78,7 +78,7 @@ fastify.get("/tests/:test", (request, reply) => {
     `
       <hr>
       <nav>
-        <a href="/">Partytown Sandboxing Tests</a>,
+        <a href="/">Partytown Sandboxing Examples</a>,
         <a href="https://weston.ruter.net/">@westonruter</a>
       </nav>
       </body>

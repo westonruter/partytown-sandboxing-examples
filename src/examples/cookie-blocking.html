@@ -8,12 +8,18 @@
         debug: true,
         get(opts) {
           if (opts.nodeName === "#document" && "cookie" === opts.name) {
-            return "partying=true";
+            return `partying=true; blocked-count=${
+              globalThis.blockedCount || 0
+            }`;
           }
           return opts.continue;
         },
         set(opts) {
           if (opts.nodeName === "#document" && "cookie" === opts.name) {
+            if (!globalThis.blockedCount) {
+              globalThis.blockedCount = 0;
+            }
+            globalThis.blockedCount++;
             console.warn(`Blocked setting cookie to ${opts.value}`);
             return opts.prevent;
           }
@@ -93,6 +99,8 @@
             document.getElementById("cookie_name").value +
             "=" +
             document.getElementById("cookie_value").value;
+
+          e.target.reset();
         });
 
         let lastSandboxCookie;

@@ -50,7 +50,7 @@ fastify.get("/examples/:example", (request, reply) => {
 
   // Inject logic to toggle whether Partytown is enabled.
   if (request.query.partytown === "true" || !("partytown" in request.query)) {
-    page = page.replaceAll("text/javascript", "text/partytown");
+    page = page.replace(/text\/javascript/g, "text/partytown");
     page = page.replace(
       "</head>",
       `<script>${partytownInlineScript}</script></head>`
